@@ -22,7 +22,7 @@ async def get_all_contacts(limit: int, offset: int, current_user: User, db: Sess
     contacts = contacts.limit(limit).offset(offset).all()
     return contacts
 
-async def get_contact_by_id(contact_id: int, current_user: User, db: Session):
+async def get_contact_by_id(contact_id: int, db: Session):
     """
     The get_contact_by_id function returns a contact by its id.
         Args:
@@ -42,7 +42,7 @@ async def get_contact_by_id(contact_id: int, current_user: User, db: Session):
     return contact
 
 
-async def get_contact_by_name(contact_name: str, limit: int, offset: int, current_user: User, db: Session):
+async def get_contact_by_name(contact_name: str, limit: int, offset: int, db: Session):
     """
     The get_contact_by_name function returns a list of contacts that match the contact_name parameter.
     The limit and offset parameters are used to paginate the results. The current_user parameter is used to ensure that only
@@ -56,11 +56,12 @@ async def get_contact_by_name(contact_name: str, limit: int, offset: int, curren
     :return: A list of contacts that match the contact_name argument
     :doc-author: Trelent
     """
-    contacts = db.query(Contact).filter_by(name=contact_name, user_id=current_user.id).limit(limit).offset(offset).all()
+    contacts = db.query(Contact).filter_by(name=contact_name)
+    contacts = contacts.limit(limit).offset(offset)
     return contacts
 
 
-async def get_contact_by_surname(contact_surname: str, limit: int, offset: int, current_user: User, db: Session):
+async def get_contact_by_surname(contact_surname: str, limit: int, offset: int,db: Session):
     """
     The get_contact_by_surname function returns a list of contacts with the given surname.
 
@@ -72,12 +73,12 @@ async def get_contact_by_surname(contact_surname: str, limit: int, offset: int, 
     :return: A list containing all matching contacts, or an empty list if no matches are found.
     :doc-author: Trelent
     """
-    contacts = db.query(Contact).filter_by(surname=contact_surname, user_id=current_user.id)
-    contacts = contacts.limit(limit).offset(offset).all()
+    contacts = db.query(Contact).filter_by(surname=contact_surname)
+    contacts = contacts.limit(limit).offset(offset)
     return contacts
 
 
-async def get_contact_by_email(contact_email: str, current_user: User, db: Session):
+async def get_contact_by_email(contact_email: str, db: Session):
     """
     The get_contact_by_email function returns a contact object from the database based on the email address provided.
     
@@ -87,11 +88,11 @@ async def get_contact_by_email(contact_email: str, current_user: User, db: Sessi
     :return: A contact object
     :doc-author: Trelent
     """
-    contact = db.query(Contact).filter_by(email=contact_email, user_id=current_user.id).first()
+    contact = db.query(Contact).filter_by(email=contact_email).first()
     return contact
 
 
-async def get_birthdays_in_next_week(limit: int, offset: int, current_user: User, db: Session):
+async def get_birthdays_in_next_week(limit: int, offset: int, db: Session):
     """
     The get_birthdays_in_next_week function returns a list of contacts with birthdays in the next week.
 
@@ -119,7 +120,7 @@ async def get_birthdays_in_next_week(limit: int, offset: int, current_user: User
     return contacts
 
 
-async def create_contact(body: ContactModel, current_user: User, db: Session):
+async def create_contact(body: ContactModel, db: Session):
     """
     The create_contact function creates a new contact in the database.
         
@@ -137,7 +138,7 @@ async def create_contact(body: ContactModel, current_user: User, db: Session):
     return contact
 
 
-async def update_contact(body: ContactModel, contact_id: int, current_user: User, db: Session):
+async def update_contact(body: ContactModel, contact_id: int, db: Session):
     """
     The update_contact function updates a contact in the database.
 
@@ -154,7 +155,7 @@ async def update_contact(body: ContactModel, contact_id: int, current_user: User
     :return: A contact
     :doc-author: Trelent
     """
-    contact = db.query(Contact).filter_by(id=contact_id, user_id=current_user.id).first()
+    contact = db.query(Contact).filter_by(id=contact_id).first()
     if contact:
         contact.name = body.name
         contact.surname = body.surname
@@ -166,7 +167,7 @@ async def update_contact(body: ContactModel, contact_id: int, current_user: User
     return contact
 
 
-async def remove_contact(contact_id: int, current_user: User, db: Session):
+async def remove_contact(contact_id: int, db: Session):
     """
     The remove_contact function removes a contact from the database.
     
@@ -183,7 +184,7 @@ async def remove_contact(contact_id: int, current_user: User, db: Session):
     :return: The contact that was deleted
     :doc-author: Trelent
     """
-    contact = db.query(Contact).filter_by(id=contact_id, user_id=current_user.id).first()
+    contact = db.query(Contact).filter_by(id=contact_id).first()
     if contact:
         db.delete(contact)
         db.commit()

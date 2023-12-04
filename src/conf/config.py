@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     postgres_db: str = "postgres"
     postgres_user: str = "postgres"
     postgres_password: str = "postgres"
-    postgres_port: int = 5232
+    postgres_port: int = 5432
     sqlalchemy_database_url: str ="postgresql+psycopg2://username:password@localhost:5432/db_name"
     secret_key: str = "secret key"
     algorithm: str = "algotihtm"
