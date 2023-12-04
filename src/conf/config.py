@@ -2,11 +2,11 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    postgres_db: str
-    postgres_user: str
-    postgres_password: str
-    postgres_port: int
-    sqlalchemy_database_url: str = "postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}"
+    postgres_db: str = "postgres"
+    postgres_user: str = "postgres"
+    postgres_password: str = "postgres"
+    postgres_port: int = 5232
+    sqlalchemy_database_url: str ="postgresql+psycopg2://username:password@localhost:5432/db_name"
     secret_key: str = "secret key"
     algorithm: str = "algotihtm"
     mail_username: str = "example@meta.ua"
@@ -16,9 +16,9 @@ class Settings(BaseSettings):
     mail_server: str = "smtp.meta.ua"
     redis_host: str = "localhost"
     redis_port: int = 6379
-    cloudinary_name: str
-    cloudinary_api_key: str
-    cloudinary_api_secret: str
+    cloudinary_name: str = "cloudinary"
+    cloudinary_api_key: str = "cloudinary"
+    cloudinary_api_secret: str = "cloudinary"
 
 
     class Config:
@@ -27,4 +27,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-

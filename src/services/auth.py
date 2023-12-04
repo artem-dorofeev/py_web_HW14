@@ -20,13 +20,43 @@ class Auth:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
     def verify_password(self, plain_password, hashed_password):
+        """
+        The verify_password function takes a plain-text password and the hashed version of that password,
+            and returns True if they match, False otherwise. This is used to verify that the user's login
+            credentials are correct.
+        
+        :param self: Represent the instance of the class
+        :param plain_password: Verify the password that is entered by the user
+        :param hashed_password: Verify the plain_password parameter
+        :return: True if the password is correct and false otherwise
+        :doc-author: Trelent
+        """
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def get_password_hash(self, password: str):
+        """
+        The get_password_hash function takes a password as input and returns the hash of that password.
+            The function uses the pwd_context object to generate a hash from the given password.
+        
+        :param self: Represent the instance of the class
+        :param password: str: Pass in the password to be hashed
+        :return: A password hash
+        :doc-author: Trelent
+        """
         return self.pwd_context.hash(password)
 
     # define a function to generate a new access token
     async def create_access_token(self, data: dict, expires_delta: Optional[float] = None):
+        """
+        The create_access_token function creates a new access token for the user.
+            
+        
+        :param self: Represent the instance of the class
+        :param data: dict: Pass in the data that will be encoded into the jwt
+        :param expires_delta: Optional[float]: Set the expiration time of the access token
+        :return: A token that is encoded with the user's data
+        :doc-author: Trelent
+        """
         to_encode = data.copy()
         if expires_delta:
             expire = datetime.utcnow() + timedelta(seconds=expires_delta)
@@ -38,6 +68,18 @@ class Auth:
 
     # define a function to generate a new refresh token
     async def create_refresh_token(self, data: dict, expires_delta: Optional[float] = None):
+        """
+        The create_refresh_token function creates a refresh token for the user.
+            Args:
+                data (dict): The data to be encoded in the JWT. This should include at least a username and an email address, but can also include other information such as roles or permissions.
+                expires_delta (Optional[float]): A timedelta object representing how long this token will be valid for before it expires and is no longer usable by the client application. If not provided, defaults to 7 days from now.
+        
+        :param self: Represent the instance of the class
+        :param data: dict: Pass in the data that will be encoded into the token
+        :param expires_delta: Optional[float]: Set the expiration time of the refresh token
+        :return: A refresh token that is encoded with the user's data
+        :doc-author: Trelent
+        """
         to_encode = data.copy()
         if expires_delta:
             expire = datetime.utcnow() + timedelta(seconds=expires_delta)
@@ -48,6 +90,17 @@ class Auth:
         return encoded_refresh_token
 
     async def decode_refresh_token(self, refresh_token: str):
+        """
+        The decode_refresh_token function is used to decode the refresh token.
+            The function will raise an HTTPException if the token is invalid or has expired.
+            If the token is valid, it will return a string with the email address of 
+            user who owns that refresh_token.
+        
+        :param self: Represent the instance of the class
+        :param refresh_token: str: Pass in the refresh token that was sent to the client
+        :return: The email of the user who was authenticated
+        :doc-author: Trelent
+        """
         try:
             payload = jwt.decode(refresh_token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             if payload['scope'] == 'refresh_token':
@@ -58,6 +111,17 @@ class Auth:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate credentials')
 
     async def get_current_user(self, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+        """
+        The get_current_user function is a dependency that will be used in the
+            UserController class. It takes a token as an argument and returns the user
+            associated with that token. If no user is found, it raises an exception.
+        
+        :param self: Represent the instance of a class
+        :param token: str: Pass the token from the request header to this function
+        :param db: Session: Get the database session
+        :return: A user object
+        :doc-author: Trelent
+        """
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -82,6 +146,17 @@ class Auth:
         return user
 
     def create_email_token(self, data: dict):
+        """
+        The create_email_token function takes a dictionary of data and returns a JWT token.
+        The token is encoded with the SECRET_KEY and ALGORITHM defined in the class.
+        The iat (issued at) claim is set to datetime.utcnow() and exp (expiration time) 
+        is set to 7 days from now.
+        
+        :param self: Represent the instance of the class
+        :param data: dict: Pass the data to be encoded
+        :return: A token
+        :doc-author: Trelent
+        """
         to_encode = data.copy()
         expire = datetime.utcnow() + timedelta(days=7)
         to_encode.update({"iat": datetime.utcnow(), "exp": expire})
@@ -90,6 +165,15 @@ class Auth:
     
 
     async def get_email_from_token(self, token: str):
+        """
+        The get_email_from_token function takes a token as an argument and returns the email address associated with that token.
+        The function uses the jwt library to decode the token, which is then used to retrieve the email address from within it.
+        
+        :param self: Represent the instance of the class
+        :param token: str: Pass the token to the function
+        :return: The email address that was encoded in the token
+        :doc-author: Trelent
+        """
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             email = payload["sub"]

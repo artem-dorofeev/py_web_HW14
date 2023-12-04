@@ -10,12 +10,20 @@ URI = settings.sqlalchemy_database_url
 engine = create_engine(URI, echo=False, pool_size=5)
 
 DBSession = sessionmaker(bind=engine)
-# session = DBSession()
+session = DBSession()
 
 # Dependency
 
 
 def get_db():
+    """
+    The get_db function is a context manager that will automatically close the database connection when it goes out of scope.
+    It also handles any exceptions that occur within the with block, rolling back changes if necessary.
+
+    :return: A generator, which is a function that returns an object on which you can call next,
+    :doc-author: Trelent
+    """
+
     db = DBSession()
     try:
         yield db
